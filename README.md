@@ -21,7 +21,4 @@ Try it out here:
 - your own study set.
 - your own flashcard set lists.
 
- ## Known Bugs & Coming Soon (v2.0) 
-- Fixing the custom image upload preview on the top banner.
-- Connecting the settings menu inputs (custom default length and alarm sounds).
-- Found a bug? Let me know so I can fix it in the next update!
+## Found a bug? Let me know so I can fix it in the next update!
