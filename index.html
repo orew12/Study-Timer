@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+     <title> Timer </title>
+     <style> 
+     body {
+          text-align: center;
+          background-color: black;
+          color: white;
+          margin: 0;
+          }
+     #settingsBtn {
+          position: fixed;
+          top: 20px;
+          left: 20px;
+          z-index:10;
+     }
+     #settingsPanel {
+          display: none; 
+          position:fixed;
+          top: 0;
+          right: 0;
+          width: 300px;
+          height: 100%;
+          background-color:#1e1e1e;
+          padding: 40px 20px;
+          text-align: left;
+     }
+     #banner {
+          background-color: #1e1e1e;
+          color: white;
+          padding: 20px;
+          font-size: 24px;
+          font-weight: bold;
+          height: 200px;
+          background-image: URL("404\ This\ Page\ cannot\ be\ found\ banner.jpg");
+          background-size: cover;
+          background-position: center;
+
+     }
+     #progressBar {
+          position: relative;
+          width: 60%;
+          height: 12px;
+          margin: 20px auto 40px;
+          background-color: #333;
+          border-radius: 6px;
+     }
+     #progressFill {
+          width: 0%;
+          height: 100%;
+          background-color: orange;
+          border-radius: 6px;
+          transition: width 0.3s linear;
+     }
+     
+     #cat {
+          position: absolute;
+          top: -26px;
+          left: 0%;
+          font-size: 28px;
+          transition: left 0.3s linear;
+          transform: translateX(-50%);
+     }
+          </style>     
+     </head>
+     <body>
+          <div id="banner"></div>
+          <button id="settingsBtn">☰</button>
+          <h4>the image above this is an image.</h4>
+          <h1>A timer with all your personalised items. </h1>
+          <div id="settingsPanel">
+               <h3>Settings</h3>
+               <label for="soundinput">alarmsound:</label>
+             <input type="file" id="soundinput" accept="audio/*">
+             <label for="lengthinput">defult length (minutes):</label>
+             <input type="number" id="lengthinput">
+             <label for="themetoggle">White mode</label>
+             <input type="checkbox" id="themetoggle">
+             <label for="bannerinput">banner image:</label>
+             <input type="file" id="bannerinput" accept="image/*">
+               </div>
+          <h2 id="display"> 00:00 </h2>
+          <div id = "progressBar">
+               <div id = "progressFill"></div>
+               <div id ="cat">🐈</div>
+          </div>
+          <Button id = "startBtn"> Start </Button>
+          <Button id = "stopBtn">  Stop </Button>
+          <button id = "pauseBtn"> Pause </button>
+          <script>
+          const themeToggle = document.getElementById("themetoggle");
+          const display =document.getElementById("display");
+          const startBtn =document.getElementById("startBtn");
+          const stopBtn = document.getElementById("stopBtn");
+          const pauseBtn = document.getElementById("pauseBtn");
+          const btn =document.getElementById("settingsBtn");
+          const panel =document.getElementById("settingsPanel");
+          const bannerinput = document.getElementById("bannerinput");
+          const banner =document.getElementById("banner");
+          const lengthinput = document.getElementById("lengthinput");
+          const progressfill = document.getElementById("progressFill");
+          const cat = document.getElementById("cat");
+          bannerinput.addEventListener("change", function() {
+               const file = bannerinput.files[0];
+               const ImageURL = URL.createObjectURL(file);
+               banner.style.backgroundimage = "URL(" + imageURL+ ")"
+          });
+          btn.addEventListener("click", function(){
+               if(panel.style.display == "block") {
+                    panel.style.display = "none";  
+               } else {
+                    panel.style.display = "block";
+               }
+          });
+          themeToggle.addEventListener("change",function() {
+               if (themeToggle.checked) {
+                    document.body.style.backgroundColor = "white";
+                    document.body.style.color = "black";
+                    panel.style.backgroundColor = "white";
+                    panel.style.color = "black";
+               } else {
+                    document.body.style.backgroundColor = "black";
+                    document.body.style.color = "white";
+                    panel.style.backgroundColor = "black";
+                    panel.style.color = "white";
+               }
+
+               
+          });
+          
+          let timeleft = 0;
+          let totalTime = 0;
+          let interval = null;
+          function showtime() {
+               const mins = Math.floor(timeleft / 60 );
+               const secs = timeleft % 60;
+               display.textContent = String(mins).padStart(2,"0") + ":" + String(secs).padStart(2, "0");
+               if (totalTime > 0) {
+                    const percent = 100 - (timeleft / totalTime ) * 100;
+                    progressfill.style.width = percent + "%";    
+                    cat.style.left = percent + "%";
+               }
+          } 
+          startBtn.addEventListener("click", function () {
+               if (timeleft === 0) {
+                    timeleft = Number(lengthinput.value) * 60
+                    totalTime = timeleft
+               }
+               showtime()
+               clearInterval(interval);
+               interval = setInterval(function() {
+                    if (timeleft > 0) {
+                         timeleft = timeleft - 1;
+                         showtime()
+
+                    } else {
+                         clearInterval(interval);
+                    }
+               } , 1000);
+          });
+          
+          pauseBtn.addEventListener("click",function() {
+               clearInterval(interval);
+          });
+            
+          
+          
+          stopBtn.addEventListener("click",function() {
+          clearInterval(interval);
+          timeleft = 0;
+          showtime() 
+          });
+
+          </script>
+     </body>
+     </html>
