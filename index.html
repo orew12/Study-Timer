@@ -18,13 +18,24 @@
      #settingsPanel {
           display: none; 
           position:fixed;
-          top: 0;
-          right: 0;
-          width: 300px;
-          height: 100%;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 460px;
+          max-width: 90vw;
+          max-height: 85vh;
+          overflow-y: auto;
+          height: auto;
+          padding: 32px 36px 36px;
+          border-radius: 14px;
+          box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+          box-sizing: border-box;
+          z-index: 21;
           background-color:#1e1e1e;
-          padding: 40px 20px;
           text-align: left;
+     }
+     #settingsPanel.show {
+          display: block;
      }
      #banner {
           background-color: #1e1e1e;
@@ -62,6 +73,38 @@
           transition: left 0.3s linear;
           transform: translateX(-50%);
      }
+     #settingsPanel label {
+          display: block;
+          margin: 0 0 8px;
+          font-size: 15px;
+          font-weight: 600;
+     }
+     #settingsPanel > div {
+          margin-bottom: 24px;
+     }
+
+     #settingsPanel input[type = "file"],
+     #settingsPanel input[type= "number"] {
+          display: block;
+          width: 100%;
+          box-sizing: border-box;
+     }
+     #settingsPanel input[type = "checkbox"] {
+          display: block;
+          width: 18px;
+          height: 18px;
+          margin: 0;
+     }
+     #settingsPanel input[type = "color"] {
+          display: block;
+          width: 100%;
+          height: 44px;
+          padding: 0;
+          border: none;
+          border-radius: 8px;
+          background: none;
+          cursor: pointer;
+     }
           </style>     
      </head>
      <body>
@@ -71,15 +114,25 @@
           <h1>A timer with all your personalised items. </h1>
           <div id="settingsPanel">
                <h3>Settings</h3>
+          <div> 
                <label for="soundinput">alarmsound:</label>
              <input type="file" id="soundinput" accept="audio/*">
+          </div>
+          <div>
              <label for="lengthinput">defult length (minutes):</label>
              <input type="number" id="lengthinput">
+          </div>
              <label for="themetoggle">White mode</label>
              <input type="checkbox" id="themetoggle">
+          <div>
+          <div> 
+               <label for = "colorinput"> Pick your own colors! </label>
+               <input type = "color" id = "colorinput" value = "#000000">
+          </div>
              <label for="bannerinput">banner image:</label>
              <input type="file" id="bannerinput" accept="image/*">
-               </div>
+           </div>
+          </div>
           <h2 id="display"> 00:00 </h2>
           <div id = "progressBar">
                <div id = "progressFill"></div>
@@ -90,6 +143,7 @@
           <button id = "pauseBtn"> Pause </button>
           <script>
           const themeToggle = document.getElementById("themetoggle");
+          const colorinput = document.getElementById("colorinput");
           const display =document.getElementById("display");
           const startBtn =document.getElementById("startBtn");
           const stopBtn = document.getElementById("stopBtn");
@@ -104,29 +158,48 @@
           bannerinput.addEventListener("change", function() {
                const file = bannerinput.files[0];
                const ImageURL = URL.createObjectURL(file);
-               banner.style.backgroundimage = "URL(" + imageURL+ ")"
+               banner.style.backgroundImage = "URL(" + ImageURL+ ")"
           });
-          btn.addEventListener("click", function(){
-               if(panel.style.display == "block") {
-                    panel.style.display = "none";  
-               } else {
-                    panel.style.display = "block";
-               }
+          btn.addEventListener("click", function () {
+               panel.classList.toggle("show");
           });
+         
           themeToggle.addEventListener("change",function() {
                if (themeToggle.checked) {
                     document.body.style.backgroundColor = "white";
-                    document.body.style.color = "black";
+                    document.body.style.color = "#1e1e1e";
                     panel.style.backgroundColor = "white";
                     panel.style.color = "black";
+                    banner.style.backgroundColor = "white";
+                    banner.style.color = "black";
                } else {
                     document.body.style.backgroundColor = "black";
                     document.body.style.color = "white";
-                    panel.style.backgroundColor = "black";
+                    panel.style.backgroundColor = "#1e1e1e";
                     panel.style.color = "white";
+                    banner.style.backgroundColor = "white";
+                    banner.style.color = "black";
                }
 
                
+          });
+          function readableText(hex) {
+               const r = parseInt(hex.slice(1,3), 16);
+               const g =parseInt(hex.slive(3,5), 16);
+               const b = paraseInt(hex.slice(5,7), 16);
+               const brightness =(r * 299 + g * 587 + b * 114) / 1000;
+               return brightness > 140 ? "black" : "white";
+          }
+
+          colorinput.addEventListener("input", function () {
+               themeToggle.checked = false;
+              const text = readableText(colorinput.value);
+              document.body.style.backgroundColor = colorinput.value;
+              document.body.style.color =text;
+              panel.style.backgroundColor =colorinput.value;
+              panel.style.color= text;
+              banner.style.backgroundColor =colorinput.value;
+              banner.style.color = text;
           });
           
           let timeleft = 0;
@@ -166,11 +239,16 @@
             
           
           
-          stopBtn.addEventListener("click",function() {
+         stopBtn.addEventListener("click", function() {
           clearInterval(interval);
           timeleft = 0;
-          showtime() 
-          });
+          totalTime = 0;
+          progressfill.style.width = "0%";
+          cat.style.left = "0%";
+          showtime();
+         });
+         
+         
 
           </script>
      </body>
