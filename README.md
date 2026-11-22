@@ -12,11 +12,11 @@ Try it out here:
 - Stop button
 - a progress bar of a cat
 - white mode/dark mode
+- Apperance picker
+- Banner Image
+- Audio
 
 ## Features in development:
-- alarm song
-- your own banner
-- your own apperance colour of the timer
 - your own to do list
 - your own study set.
 - your own flashcard set lists.
