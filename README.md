@@ -23,5 +23,6 @@ Try it out here:
 - DAILY GOAL BAR
 - PROGRESS BAR FOR CHAPTERS ENTERED OR SUBJECT
 - DYNAMIC BROWSWER TITLE
+- CUSTOM PROGRESS BAR/FILL
 
 ## Found a bug? Let me know so I can fix it in the next update!
