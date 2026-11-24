@@ -30,7 +30,7 @@
           border-radius: 14px;
           box-shadow: 0 12px 40px rgba(0,0,0,0.6);
           box-sizing: border-box;
-          z-index: 21;
+          z-index: 200;
           background-color:#1e1e1e;
           text-align: left;
      }
@@ -109,7 +109,7 @@
           position: fixed;
           top: 240px;
           left: 0;
-          z-index: 15;
+          z-index: 150;
           display: flex;
           flex-direction: column;
           gap: 8px;
@@ -141,7 +141,7 @@
      .sidePanel {
           position: fixed;
           top: 240px;
-          left: 0;
+          left: 380px;
           width: 300px;
           max-height: 70vh;
           overflow-y: auto;
@@ -150,13 +150,34 @@
           color: white;
           border-radius: 0 14px 14px 0;
           box-shadow: 4px 4px 20px rgba(0,0,0,0.6);
-          transition: transform 0.3s ease;
-          z-index: 14;
+          transition: transform 0.3s ease, opacity 0.3s ease, visibility 0.3s;
+          z-index: 100;
           text-align: left;
+          transform: translateX(-20px);
+          box-sizing: border-box;
+          opacity: 0;
+          visibility: hidden;
+          pointer-events: none;
+          
+     
      }
      .sidePanel.open {
+          opacity: 1;
+          visibility: visible;
+          pointer-events:  none;
           transform: translateX(0);
      }
+     #settingsPanel.show ~ .tab {
+          left: 380px;
+
+     }
+     body:has(#settingsPanel.show) .sidePanel {
+          left: 380px;
+     }
+     body:has(#settingsPanel.show) .tab {
+          left: 380px;
+     }
+    
           </style>     
      </head>
      <body>
@@ -176,12 +197,19 @@
                <button id = "todoAdd">Add</button>
                <ul id = "todoList"></ul>
           </div>
-          <div id = "flashpanel" class = "sidePanel">
-               <h3> FlashCARDS </h3>
-               <p id ="flashQuestion"> Make a flashcard </p>
+          <div id = "flashPanel" class = "sidePanel">
+               <H3> FLASHCARDS </H3>
+               <p id = "flashQuestion"> No cards yet — add one below </p>
                <button id = "flashFlip"> Flip </button>
-               <button id = "flashNext"> Next
-               </button>
+               <button id = "flashNext"> Next </button>
+               <p id = "flashCounter"></p>
+               <hr> 
+               <h4>Add a card</h4>
+               <input type = "text" id = "cardQ" placeholder="Question..">
+               <input type = "text" id = "cardA" placeholder= "Answer..">
+               <button id = "cardAdd"> Add card</button>
+               <button id = "cardDelete"> Delete Card </button>
+               <ul id = "cardList"></ul>
           </div>
           <h4>the image above this is an image.</h4>
           <h1>A timer with all your personalised items. </h1>
@@ -204,8 +232,8 @@
           </div>
              <label for="bannerinput">banner image:</label>
              <input type="file" id="bannerinput" accept="image/*">
-          
-           
+           </div>
+          </div>
 
           <h2 id="display"> 00:00 </h2>
           <div id = "progressBar">
@@ -285,7 +313,7 @@
               panel.style.color= text;
               banner.style.backgroundColor =colorinput.value;
               banner.style.color = text;
-              saveettings();
+              savesettings();
           });
 
           function saveSettings() {
@@ -388,7 +416,7 @@
                tab.addEventListener("click", function () {
                     const target = document.getElementById(tab.dataset.panel);
                     const isOpen = target.classList.contains("open");
-                    panels.forEach(function (P) {p.classList.remove("open");});
+                    panels.forEach(function (p) {p.classList.remove("open");});
                     tabs.forEach(function (t) {t.classList.remove("active");});
                     if (!isOpen) {
                          target.classList.add("open");
@@ -396,7 +424,90 @@
                     }
                });
           });
-         
+          const flashQuestion = document.getElementById("flashQuestion");
+          const flashFlip = document.getElementById("flashFlip");
+          const flashNext = document.getElementById("flashNext");
+          const flashCounter = document.getElementById("flashCounter");
+          const cardQ = document.getElementById("cardQ");
+          const cardA = document.getElementById("cardA");
+          const cardAdd = document.getElementById("cardAdd");
+          const cardDelete = document.getElementById("cardDelete");
+          const cardList = document.getElementById("cardList");
+
+          let cards = JSON.parse(localStorage.getItem("flashCards") || "[]");
+          let cardIndex = 0;
+          let showingAnswer = false;
+
+          function saveCards() {
+               localStorage.setItem("flashCards", JSON.stringify(cards));
+
+          }
+          function renderCard() {
+               if (cards.length === 0) {
+                    flashQuestion.textContent = "No cards yet — add one below.";
+                    flashCounter.textContent = "";
+                    return;
+               }
+               if(cardIndex >= cards.length) cardIndex = 0;
+               const card = cards[cardIndex];
+               flashQuestion.textContent = showingAnswer? card.a : card.q;
+               flashCounter.textContent = "Card " + (cardIndex + 1) + " of " + cards.length;
+           }
+           function renderCardList() {
+               cardList.innerHTML = "";
+               cards.forEach(function (card, i) {
+                    const li = document.createElement("li");
+                    li.textContent = card.q;
+                    li.style.cursor = "pointer";
+                    li.addEventListener("click", function () {
+                         cardIndex = i;
+                         showingAnswer = false;
+                         renderCard();
+                    });
+                    cardList.appendChild(li);
+               });
+           }        
+           
+           cardAdd.addEventListener("click", function () {
+               const q = cardQ.value.trim();
+               const a = cardA.value.trim();
+               if (!q || !a ) {
+                    alert("Fill in both Question and Answer.");  
+                  return;
+               }
+               cards.push({ q: q , a: a });
+               saveCards();
+               cardQ.value = "";
+               cardA.value = "";
+               cardIndex= cards.length -1;
+               showingAnswer = false;
+               renderCard();
+               renderCardList();
+
+           });
+           cardDelete.addEventListener("click", function () {
+               if (cards.length === 0) return;
+               cards.splice(cardIndex,1);
+               saveCards();
+               if (cardIndex >= cards.length) cardIndex = 0;
+               showingAnswer= false;
+               renderCard();
+               renderCardList();
+           });
+
+          flashFlip.addEventListener("click", function () {
+               if (cards.length === 0) return;
+               showingAnswer = !showingAnswer;
+               renderCard();
+          });
+          flashNext.addEventListener("click", function (){
+               if (cards.length === 0) return;
+               cardIndex = (cardIndex + 1) % cards.length;
+               showingAnswer = false;
+               renderCard();
+          });
+          renderCard();
+          renderCardList();
 
           </script>
      </body>
