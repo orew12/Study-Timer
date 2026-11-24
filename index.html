@@ -177,6 +177,47 @@
      body:has(#settingsPanel.show) .tab {
           left: 380px;
      }
+
+     #tododate {
+          margin: 6px 0;
+          padding: 4px;
+          border-radius: 6px;
+          border: none;
+     }
+     #todoList li {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 8px;
+          padding: 6px 8px;
+          margin-bottom: 6px;
+          border-radius: 6px;
+          background-color: #2a2a2a;
+          cursor: pointer;
+     }
+     #todolist li:hover .todoText {
+          text-decoration: line-through;
+          opacity: 0.55s;
+     }
+     #todoList li.done .todoText {
+          text-decoration: line-through;
+          opacity: 0.5s;
+     }
+     #todoList li.overdue {
+          border-left: 3px solid #ff5555;
+
+     }
+     #tododate {
+          font-size: 12px;
+          opacity:0.7;
+          white-space:  nowrap;
+     }
+     #todoReminder {
+          color: #ff8080;
+          font-size: 13px;
+          min-height: 16px;
+          margin: 4px 0 10px;
+     }
     
           </style>     
      </head>
@@ -194,7 +235,9 @@
           <div id = "todoPanel" class = "sidePanel">
                <h3> To-do List</h3>
                <input type = "text" id = "todoinput" placeholder = "Add a task..">
+               <input type = "date" id = "tododate">
                <button id = "todoAdd">Add</button>
+               <p id = "todoReminder"></p>
                <ul id = "todoList"></ul>
           </div>
           <div id = "flashPanel" class = "sidePanel">
@@ -508,6 +551,79 @@
           });
           renderCard();
           renderCardList();
+
+          const todoList = document.getElementById("todoList");
+          const tododate = document.getElementById("tododate");
+          const todoAdd = document.getElementById("todoAdd");
+          const todoinput = document.getElementById("todoinput");
+          const todoReminder = document.getElementById("todoReminder");
+
+          const todos = JSON.parse(localStorage.getItem("todos") || "[]");
+          function saveTools() {
+               localStorage.setItem("todos", JSON.stringify(todos));
+          }
+          
+          function todoStr() {
+               const d = new Date();
+               return d.getFullYear() + "-" + String(d.getMonth()+ 1).padStart(2,"0") + "-" + string(d.getData()).padStart(2,"0");
+          }      
+          function renderTodos() {
+               todoList.innerHTML = "";
+               const today = todayStr();
+               let overdue = 0;
+
+               todos.forEach(function (iitem, i) {
+                    const li =document.createElement("li");
+                    if (item.done) li.classList.add("done");
+                    if (!item.done && item.date && item.date <today) {
+                         li.classList.add("overdue");
+                         overdue++;
+                    }
+                    const span =document.createElement("span");
+                    span.className = "todoText";
+                    span.textContent = item.text;
+                    const dateSpan = document.createElementBy("span");
+                    dateSpan.className = "todoDate";
+                    dateSpan.textContent = item.date || "no date";
+                    li.appendChild(span);
+                    li.appendChild(dateSpan);
+                    li.addEventListener("click", function(){
+                         todos[i].done = !todos[i].done;
+                         saveTodos();
+                         renderTodos();
+                    });
+                    li.addEventListener("click", function(e) {
+                         e.stopPropagation();
+                         todos.splice(i, 1);
+                         saveTodos();
+                         renderTodos();
+
+                    });
+                    todoList.appendChild(li);
+
+                    
+               });
+               todoReminder.textContext = overdue > 0
+               ? overdue + (overdue === 1 ? " task is overdue!" : " tasks are overdue!")
+               : "";
+          
+          } 
+          todoAdd.addEventListener("click", function () {
+            const text = todoinput.value.trim();
+            if (!text) return;
+             todos.push({ text: text, date: tododate.value, done: false });
+            saveTodos();
+            todoinput.value = "";
+           tododate.value = "";
+              renderTodos();
+          });
+          todoinput.addEventListener("keydown", function(e) {
+               if (e.key === "Enter") todoAdd.click();
+          });
+
+          renderTodos();
+          setInterval(renderTodos, 60000);
+           
 
           </script>
      </body>
