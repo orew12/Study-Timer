@@ -1,7 +1,7 @@
 # Study-Timer
 Make the timer feel like yours.
 
-## STUDY TIMER 1.0
+## STUDY TIMER 2.0
 IN DEVELOPMENT!
 
 Try it out here: 
@@ -17,8 +17,11 @@ Try it out here:
 - Audio
 
 ## Features in development:
-- your own to do list
-- your own study set.
-- your own flashcard set lists.
+- TIME MINUTE STUDY.
+- CUSTOM MUSIC IN THE BACKGROUND TO HAVE FOCUS. RANGING FROM WHITE NOISE TO BROWN NOISE TO CUSTOM NOISE!
+- BADGES
+- DAILY GOAL BAR
+- PROGRESS BAR FOR CHAPTERS ENTERED OR SUBJECT
+- DYNAMIC BROWSWER TITLE
 
 ## Found a bug? Let me know so I can fix it in the next update!
